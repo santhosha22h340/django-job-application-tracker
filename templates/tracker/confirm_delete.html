@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="confirm-container">
+
+    <div class="panel">
+
+        <h1>Delete Application?</h1>
+
+        <p>
+            Are you sure you want to delete
+            <strong>{{ application.company }}</strong>
+            — {{ application.role }}?
+        </p>
+
+        <p class="muted">
+            This action cannot be undone.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-actions">
+                <button type="submit"
+                        class="btn btn-danger">
+                    Yes, Delete
+                </button>
+
+                <a href="{% url 'dashboard' %}"
+                   class="btn btn-light">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

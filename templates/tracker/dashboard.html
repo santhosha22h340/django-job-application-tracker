@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div>
+            <span class="eyebrow">CAREER WORKSPACE</span>
+            <h1>Job Application Tracker</h1>
+            <p>Manage your applications. Stay organized. Get hired.</p>
+        </div>
+
+        <a href="{% url 'add_application' %}" class="btn-primary">
+            <span class="plus-icon">+</span>
+            Add Application
+        </a>
+    </header>
+
+    <!-- Summary Cards -->
+    <section class="stats-grid">
+
+        <article class="stat-card total">
+            <div class="stat-heading">
+                <span>Total Applications</span>
+                <span class="stat-icon">▤</span>
+            </div>
+            <div class="stat-number">{{ total_count }}</div>
+            <div class="stat-description">All applications tracked</div>
+            <div class="stat-line"></div>
+        </article>
+
+        <article class="stat-card applied">
+            <div class="stat-heading">
+                <span>Applied</span>
+                <span class="stat-icon">↗</span>
+            </div>
+            <div class="stat-number">{{ applied_count }}</div>
+            <div class="stat-description">Applications submitted</div>
+            <div class="stat-line"></div>
+        </article>
+
+        <article class="stat-card interview">
+            <div class="stat-heading">
+                <span>Interview</span>
+                <span class="stat-icon">◷</span>
+            </div>
+            <div class="stat-number">{{ interview_count }}</div>
+            <div class="stat-description">Interview opportunities</div>
+            <div class="stat-line"></div>
+        </article>
+
+        <article class="stat-card selected">
+            <div class="stat-heading">
+                <span>Selected</span>
+                <span class="stat-icon">✓</span>
+            </div>
+            <div class="stat-number">{{ selected_count }}</div>
+            <div class="stat-description">Positive outcomes</div>
+            <div class="stat-line"></div>
+        </article>
+
+        <article class="stat-card rejected">
+            <div class="stat-heading">
+                <span>Rejected</span>
+                <span class="stat-icon">×</span>
+            </div>
+            <div class="stat-number">{{ rejected_count }}</div>
+            <div class="stat-description">Applications closed</div>
+            <div class="stat-line"></div>
+        </article>
+
+    </section>
+
+    <!-- Applications Table Section -->
+    <section class="applications-section">
+
+        <div class="applications-header">
+            <div>
+                <h2>Your Applications</h2>
+                <p>Track and manage all your job applications in one place.</p>
+            </div>
+
+            <form method="get" class="filter-form">
+                <label for="status">Filter by status</label>
+                <select id="status" name="status"
+                        onchange="this.form.submit()">
+                    <option value="">All Applications</option>
+
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}"
+                        {% if selected_status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Company & Role</th>
+                        <th>Location</th>
+                        <th>Applied Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for application in applications %}
+                    <tr>
+                        <td>
+                            <div class="company-name">
+                                {{ application.company }}
+                            </div>
+
+                            <div class="job-role">
+                                {{ application.role }}
+                            </div>
+
+                            {% if application.job_url %}
+                            <a class="job-link"
+                               href="{{ application.job_url }}"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                View job posting ↗
+                            </a>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="location-text">
+                                {{ application.location|default:"Not specified" }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="date-text">
+                                {{ application.applied_date|date:"d M Y" }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="status-badge
+                                {% if application.status == 'Applied' %}badge-applied
+                                {% elif application.status == 'Interview' %}badge-interview
+                                {% elif application.status == 'Selected' %}badge-selected
+                                {% elif application.status == 'Rejected' %}badge-rejected
+                                {% endif %}">
+                                <span class="status-dot"></span>
+                                {{ application.status }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="action-buttons">
+                                <a class="action-edit"
+                                   href="{% url 'edit_application' application.pk %}">
+                                    Edit
+                                </a>
+
+                                <a class="action-delete"
+                                   href="{% url 'delete_application' application.pk %}">
+                                    Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">▤</div>
+                                <h3>No applications yet</h3>
+                                <p>
+                                    Start tracking your job search by adding
+                                    your first application.
+                                </p>
+                                <a href="{% url 'add_application' %}"
+                                   class="btn-primary">
+                                    + Add Your First Application
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <span>
+                Showing {{ applications|length }}
+                application{{ applications|length|pluralize }}
+            </span>
+            <span>Job Application Tracker</span>
+        </div>
+
+    </section>
+
+</div>
+{% endblock %}
+
+
+
+
